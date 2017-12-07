@@ -12,7 +12,7 @@
     <groupId>com.github.hekonsek</groupId>
     <artifactId>rxjava-failable</artifactId>
     <name>${project.artifactId}</name>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
 
     <properties>
         <!-- General project settings -->
@@ -76,7 +76,7 @@
                         <id>enforce</id>
                         <configuration>
                             <rules>
-                                <requireUpperBoundDeps/>
+                                <requireUpperBoundDeps />
                             </rules>
                         </configuration>
                         <goals>
@@ -216,7 +216,7 @@
         <connection>scm:git:git@github.com:hekonsek/rxjava-failable.git</connection>
         <developerConnection>scm:git:git@github.com:hekonsek/rxjava-failable.git</developerConnection>
         <url>git@github.com:hekonsek/rxjava-failable.git</url>
-        <tag>HEAD</tag>
+        <tag>rxjava-failable-0.2</tag>
     </scm>
 
     <distributionManagement>
