@@ -1,6 +1,6 @@
 # RxJava Failable
 
-[![Version](https://img.shields.io/badge/RxJava%20Failable-0.0-blue.svg)](https://github.com/hekonsek/rxjava-failable/releases)
+[![Version](https://img.shields.io/badge/RxJava%20Failable-0.1-blue.svg)](https://github.com/hekonsek/rxjava-failable/releases)
 [![Build](https://api.travis-ci.org/hekonsek/rxjava-failable.svg)](https://travis-ci.org/hekonsek/rxjava-failable)
 
 RxJava Failable provides constructs for handling RxJava processing exceptions without interrupting continuous stream.
@@ -12,7 +12,7 @@ In order to start using Vert.x Failable add the following dependency to your Mav
     <dependency>
       <groupId>com.github.hekonsek</groupId>
       <artifactId>rxjava-failable</artifactId>
-      <version>0.0</version>
+      <version>0.1</version>
     </dependency>
 
 ## Usage
