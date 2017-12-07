@@ -23,6 +23,7 @@
         <!-- Dependencies versions -->
         <assertj.version>3.6.2</assertj.version>
         <junit.version>4.12</junit.version>
+        <rxjava.version>2.1.7</rxjava.version>
         <vertx.version>3.5.0</vertx.version>
 
         <!-- Plugins versions -->
@@ -38,7 +39,7 @@
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
-            <version>2.1.7</version>
+            <version>${rxjava.version}</version>
         </dependency>
 
         <!-- Testing -->
@@ -75,11 +76,7 @@
                         <id>enforce</id>
                         <configuration>
                             <rules>
-                                <requireUpperBoundDeps>
-                                    <excludes>
-                                        <exclude>org.apache.kafka:connect-api</exclude>
-                                    </excludes>
-                                </requireUpperBoundDeps>
+                                <requireUpperBoundDeps/>
                             </rules>
                         </configuration>
                         <goals>
