@@ -22,8 +22,8 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
+import static io.reactivex.Observable.defer;
 import static io.reactivex.Observable.empty;
-import static io.reactivex.Observable.just;
 
 public class FailableFlatMap<Upstream, Downstream> implements ObservableTransformer<Upstream, Downstream> {
 
@@ -57,14 +57,10 @@ public class FailableFlatMap<Upstream, Downstream> implements ObservableTransfor
     // Transformation
 
     @Override public ObservableSource<Downstream> apply(Observable<Upstream> upstream) {
-        return upstream.flatMap(i -> {
-            try {
-                return mapper.apply(i);
-            } catch (Throwable t) {
-                failureCallback.accept(new Failure<>(i, t));
-                return empty();
-            }
-        });
+        return upstream.flatMap(value -> defer(() -> mapper.apply(value)).onErrorResumeNext(cause -> {
+            failureCallback.accept(new Failure<>(value, cause));
+            return empty();
+        }));
     }
 
 }

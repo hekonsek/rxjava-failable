@@ -24,9 +24,14 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.ExecutorService;
+
 import static com.github.hekonsek.rxjava.failable.FailableFlatMap.failable;
+import static io.reactivex.Observable.empty;
+import static io.reactivex.Observable.fromFuture;
 import static io.reactivex.Observable.just;
 import static io.reactivex.Observable.range;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.rules.Timeout.seconds;
 
@@ -35,6 +40,8 @@ public class FailableFlatMapTest {
 
     @Rule
     public Timeout timeout = seconds(5);
+
+    ExecutorService executor = newCachedThreadPool();
 
     @Test
     public void shouldExecuteFailureCallback(TestContext testContext) {
@@ -45,9 +52,37 @@ public class FailableFlatMapTest {
     }
 
     @Test
+    public void applyingNewErrorHandlerShouldNotOverrideFailureHandler(TestContext testContext) {
+        Async async = testContext.async();
+        range(0, 4).
+                compose(failable(i -> just(4 / i), failure -> async.complete())).
+                onErrorResumeNext(throwable -> {
+                    return empty();
+                }).
+                subscribe();
+    }
+
+    @Test
+    public void shouldExecuteAsyncFailureCallback(TestContext testContext) {
+        Async async = testContext.async();
+        range(0, 4).
+                compose(failable(i -> fromFuture(executor.submit(() -> 4 / i)), failure -> async.complete())).
+                subscribe();
+    }
+
+    @Test
     public void shouldExecuteMapper() {
         Iterable<Integer> results = range(0, 4).
                 compose(failable(i -> just(4 / i), failure -> {
+                })).
+                blockingIterable();
+        assertThat(results).hasSize(3);
+    }
+
+    @Test
+    public void shouldExecuteAsyncMapper() {
+        Iterable<Integer> results = range(0, 4).
+                compose(failable(i -> fromFuture(executor.submit(() -> 4 / i)), failure -> {
                 })).
                 blockingIterable();
         assertThat(results).hasSize(3);
