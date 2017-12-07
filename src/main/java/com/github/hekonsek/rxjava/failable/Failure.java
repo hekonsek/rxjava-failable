@@ -1,5 +1,7 @@
 package com.github.hekonsek.rxjava.failable;
 
+import static java.lang.String.format;
+
 public class Failure<Upstream> {
 
     private final Upstream value;
@@ -17,6 +19,11 @@ public class Failure<Upstream> {
 
     public Throwable cause() {
         return cause;
+    }
+
+    @Override public String toString() {
+        String message = cause.getMessage() != null ? cause.getMessage() : "";
+        return format("Upstream value: %s. Cause: %s: %s", value, cause.getClass().getSimpleName(), message);
     }
 
 }
