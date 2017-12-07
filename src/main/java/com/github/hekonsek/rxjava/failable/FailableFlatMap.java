@@ -11,11 +11,7 @@ import static io.reactivex.Observable.just;
 
 public class FailableFlatMap<Upstream, Downstream> implements ObservableTransformer<Upstream, Downstream> {
 
-    public static void main(String[] args) {
-        just(1, 2, 0, 3, 4).
-                compose(failable(i -> just(12 / i), e -> System.out.println("Error: " + e.cause().getMessage() + " || Event: " + e.value()))).
-                subscribe(System.out::println);
-    }
+    // Members
 
     private final Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper;
 
@@ -41,6 +37,8 @@ public class FailableFlatMap<Upstream, Downstream> implements ObservableTransfor
             Consumer<Failure<Upstream>> failureCallback) {
         return failableFlatMap(mapper, failureCallback);
     }
+
+    // Transformation
 
     @Override public ObservableSource<Downstream> apply(Observable<Upstream> upstream) {
         return upstream.flatMap(i -> {
