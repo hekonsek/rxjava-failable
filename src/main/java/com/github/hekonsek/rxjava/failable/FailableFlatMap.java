@@ -38,7 +38,7 @@ public class FailableFlatMap<Upstream, Downstream> implements ObservableTransfor
 
     public FailableFlatMap(Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper, BiConsumer<Throwable, Upstream> failureCallback) {
         this.mapper = requireNonNull(mapper, "Failable mapper cannot be empty.");
-        this.failureCallback = requireNonNull(failureCallback, "Failure callback cannot be empty.");;
+        this.failureCallback = requireNonNull(failureCallback, "Failure callback cannot be empty.");
     }
 
     // Factories
