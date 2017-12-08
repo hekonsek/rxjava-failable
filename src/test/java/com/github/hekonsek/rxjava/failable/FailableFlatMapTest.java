@@ -16,6 +16,7 @@
  */
 package com.github.hekonsek.rxjava.failable;
 
+import io.reactivex.Observable;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -42,20 +43,24 @@ public class FailableFlatMapTest {
     public Timeout timeout = seconds(5);
 
     ExecutorService executor = newCachedThreadPool();
+    
+    Observable<Integer> observable = Observable.just(0, 1, 2 ,3);
+
+    // Tests
 
     @Test
     public void shouldExecuteFailureCallback(TestContext testContext) {
         Async async = testContext.async();
-        range(0, 4).
-                compose(failable(i -> just(4 / i), failure -> async.complete())).
+        observable.
+                compose(failable(i -> just(4 / i), (cause, value) -> async.complete())).
                 subscribe();
     }
 
     @Test
     public void applyingNewErrorHandlerShouldNotOverrideFailureHandler(TestContext testContext) {
         Async async = testContext.async();
-        range(0, 4).
-                compose(failable(i -> just(4 / i), failure -> async.complete())).
+        observable.
+                compose(failable(i -> just(4 / i), (cause, value) -> async.complete())).
                 onErrorResumeNext(throwable -> {
                     return empty();
                 }).
@@ -65,15 +70,15 @@ public class FailableFlatMapTest {
     @Test
     public void shouldExecuteAsyncFailureCallback(TestContext testContext) {
         Async async = testContext.async();
-        range(0, 4).
-                compose(failable(i -> fromFuture(executor.submit(() -> 4 / i)), failure -> async.complete())).
+        observable.
+                compose(failable(i -> fromFuture(executor.submit(() -> 4 / i)), (cause, value) -> async.complete())).
                 subscribe();
     }
 
     @Test
     public void shouldExecuteMapper() {
-        Iterable<Integer> results = range(0, 4).
-                compose(failable(i -> just(4 / i), failure -> {
+        Iterable<Integer> results = observable.
+                compose(failable(i -> just(4 / i), (cause, value) -> {
                 })).
                 blockingIterable();
         assertThat(results).hasSize(3);
@@ -81,8 +86,8 @@ public class FailableFlatMapTest {
 
     @Test
     public void shouldExecuteAsyncMapper() {
-        Iterable<Integer> results = range(0, 4).
-                compose(failable(i -> fromFuture(executor.submit(() -> 4 / i)), failure -> {
+        Iterable<Integer> results = observable.
+                compose(failable(i -> fromFuture(executor.submit(() -> 4 / i)), (cause, value) -> {
                 })).
                 blockingIterable();
         assertThat(results).hasSize(3);
@@ -91,9 +96,9 @@ public class FailableFlatMapTest {
     @Test
     public void failureShouldIncludeOriginalValue(TestContext context) {
         Async async = context.async();
-        range(0, 4).
-                compose(failable(i -> just(4 / i), failure -> {
-                    assertThat(failure.value()).isEqualTo(0);
+        observable.
+                compose(failable(i -> just(4 / i), (cause, value) -> {
+                    assertThat(value).isEqualTo(0);
                     async.complete();
                 })).
                 subscribe();
@@ -102,9 +107,9 @@ public class FailableFlatMapTest {
     @Test
     public void failureShouldIncludeCause(TestContext context) {
         Async async = context.async();
-        range(0, 4).
-                compose(failable(i -> just(4 / i), failure -> {
-                    assertThat(failure.cause()).isInstanceOf(ArithmeticException.class);
+        observable.
+                compose(failable(i -> just(4 / i), (cause, value) -> {
+                    assertThat(cause).isInstanceOf(ArithmeticException.class);
                     async.complete();
                 })).
                 subscribe();

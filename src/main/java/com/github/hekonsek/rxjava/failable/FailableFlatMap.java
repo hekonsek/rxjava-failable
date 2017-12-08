@@ -19,11 +19,12 @@ package com.github.hekonsek.rxjava.failable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Function;
 
 import static io.reactivex.Observable.defer;
 import static io.reactivex.Observable.empty;
+import static java.util.Objects.requireNonNull;
 
 public class FailableFlatMap<Upstream, Downstream> implements ObservableTransformer<Upstream, Downstream> {
 
@@ -31,26 +32,26 @@ public class FailableFlatMap<Upstream, Downstream> implements ObservableTransfor
 
     private final Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper;
 
-    private final Consumer<Failure<Upstream>> failureCallback;
+    private final BiConsumer<Throwable, Upstream> failureCallback;
 
     // Constructors
 
-    public FailableFlatMap(Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper, Consumer<Failure<Upstream>> failureCallback) {
-        this.mapper = mapper;
-        this.failureCallback = failureCallback;
+    public FailableFlatMap(Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper, BiConsumer<Throwable, Upstream> failureCallback) {
+        this.mapper = requireNonNull(mapper, "Failable mapper cannot be empty.");
+        this.failureCallback = requireNonNull(failureCallback, "Failure callback cannot be empty.");;
     }
 
     // Factories
 
     public static <Upstream, Downstream> FailableFlatMap<Upstream, Downstream> failableFlatMap(
             Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper,
-            Consumer<Failure<Upstream>> failureCallback) {
+            BiConsumer<Throwable, Upstream> failureCallback) {
         return new FailableFlatMap<>(mapper, failureCallback);
     }
 
     public static <Upstream, Downstream> FailableFlatMap<Upstream, Downstream> failable(
             Function<Upstream, ? extends ObservableSource<? extends Downstream>> mapper,
-            Consumer<Failure<Upstream>> failureCallback) {
+            BiConsumer<Throwable, Upstream> failureCallback) {
         return failableFlatMap(mapper, failureCallback);
     }
 
@@ -58,7 +59,7 @@ public class FailableFlatMap<Upstream, Downstream> implements ObservableTransfor
 
     @Override public ObservableSource<Downstream> apply(Observable<Upstream> upstream) {
         return upstream.flatMap(value -> defer(() -> mapper.apply(value)).onErrorResumeNext(cause -> {
-            failureCallback.accept(new Failure<>(value, cause));
+            failureCallback.accept(cause, value);
             return empty();
         }));
     }

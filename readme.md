@@ -27,9 +27,9 @@ import static com.github.hekonsek.rxjava.failable.FailableFlatMap.failableFlatMa
 
 Observable.just(0, 1, 2, 4).
   compose(
-    failableFlatMap(i -> just(4/i), failure -> {
-      System.out.print("Error " + failure.cause().getClass().getSimpleName());
-      System.out.println(" for value: " + failure.value());
+    failableFlatMap(i -> just(4/i), (cause, value) -> {
+      System.out.print("Error " + cause.getClass().getSimpleName());
+      System.out.println(" for value: " + value);
     })
   ).subscribe(System.out::println);
 
@@ -46,6 +46,12 @@ Error ArithmeticException for value: 0
 
 Please note that an invocation of a failure handles doesn't stop `Observable` from processing. What is also important, the original value
 processing of which caused the exception is sent to failure callback as well.
+
+You can also use simplified syntax `failable(...)` instead of `failableFlatMap(...)`. For example:
+
+```
+observable.compose(failable(i -> i, (cause, value) -> {}));
+```
 
 ## License
 
