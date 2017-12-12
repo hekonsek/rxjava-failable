@@ -1,6 +1,6 @@
 # RxJava Failable
 
-[![Version](https://img.shields.io/badge/RxJava%20Failable-0.2-blue.svg)](https://github.com/hekonsek/rxjava-failable/releases)
+[![Version](https://img.shields.io/badge/RxJava%20Failable-0.3-blue.svg)](https://github.com/hekonsek/rxjava-failable/releases)
 [![Build](https://api.travis-ci.org/hekonsek/rxjava-failable.svg)](https://travis-ci.org/hekonsek/rxjava-failable)
 [![Coverage](https://sonarcloud.io/api/badges/measure?key=com.github.hekonsek%3Arxjava-failable&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.hekonsek%3Arxjava-failable&metric=coverage)
 
@@ -13,7 +13,7 @@ In order to start using Vert.x Failable add the following dependency to your Mav
     <dependency>
       <groupId>com.github.hekonsek</groupId>
       <artifactId>rxjava-failable</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
     </dependency>
 
 ## Usage
